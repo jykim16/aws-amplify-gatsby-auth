@@ -1,21 +1,45 @@
-import React from 'react'
-import { Link } from 'gatsby'
+import React, { useState } from 'react';
+import { Link, useStaticQuery, graphql } from 'gatsby';
+import { Select } from '@amzn/awsui-components-react';
 
-import Layout from '../components/layout'
+const Page = () => {
+  const options = useStaticQuery(graphql`
+    query {
+      allArchitectures {
+        edges {
+          node {
+            id
+            name
+            services
+          }
+        }
+      }
+    }
+  `)
+  let architectureOptions = options.allArchitectures.edges.map(architecture => {
+    return {
+      label: architecture.node.name,
+      value: architecture.node.id
+    }
+  })
+  const [selectedArch, setArch] = useState(architectureOptions[0]);
+  console.log(selectedArch)
+  return (
+    <main>
+      <h1>Architecture Selection</h1>
+      <p>
+        This is an example of data being brought into a static page at build time
+        powered by Gatsby
+      </p>
+      {/* <Link to="/about">About</Link> */}
 
-import Amplify from 'aws-amplify'
-import config from '../aws-exports'
-Amplify.configure(config)
+      <Select options={architectureOptions} selectedOption={selectedArch} onChange={event=>setArch(event.detail.selectedOption)} selectedLabel="Selected"></Select>
+      Services:
+      <p>
+      {JSON.stringify(options.allArchitectures.edges[parseInt(selectedArch.value)].node.services)}
+      </p>
+    </main>
+  );
+};
 
-const IndexPage = () => (
-  <Layout>
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site with multi-user authentication powered by <a href="https://amplify.aws">AWS Amplify</a></p>
-    <p>Create a new account: <Link to="/app/signup">Sign Up</Link></p>
-    <Link to="/app/login">Sign In</Link><br />
-    <Link to="/app/home">Home</Link><br />
-    <Link to="/app/profile">Your profile</Link>
-  </Layout>
-)
-
-export default IndexPage
+export default Page;

@@ -51,7 +51,7 @@ const Page = () => {
       {JSON.stringify(options.allArchitectures.edges[parseInt(selectedArch.value)].node.services)}
       </p>
 
-      <h1>User input api call</h1>
+      <h1>adder api call</h1>
       <Input
         onChange={onUpdateReflect}
         value={reflectInput}

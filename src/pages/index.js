@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useStaticQuery, graphql } from 'gatsby';
-import { Select } from '@amzn/awsui-components-react';
+import { Select, Input } from '@amzn/awsui-components-react';
 
 const Page = () => {
   const options = useStaticQuery(graphql`
@@ -23,6 +23,18 @@ const Page = () => {
     }
   })
   const [selectedArch, setArch] = useState(architectureOptions[0]);
+  const [reflectInput, setReflect] = useState("");
+  const [reflectedInput, setReflected] = useState("");
+  async function onUpdateReflect(event) {
+    console.log(event.detail.value)
+    setReflect(event.detail.value)
+    let response = await fetch(`https://86qg7pg1oi.execute-api.us-east-1.amazonaws.com/reflect?input=${event.detail.value}`);
+    if (response.ok) {
+      let text = await response.text()
+      // console.log(text)
+      setReflected(text);
+    }
+  }
   console.log(selectedArch)
   return (
     <main>
@@ -38,6 +50,14 @@ const Page = () => {
       <p>
       {JSON.stringify(options.allArchitectures.edges[parseInt(selectedArch.value)].node.services)}
       </p>
+
+      <h1>User input api call</h1>
+      <Input
+        onChange={onUpdateReflect}
+        value={reflectInput}
+      />
+
+      <p>{reflectedInput}</p>
     </main>
   );
 };
